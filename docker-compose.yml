@@ -9,14 +9,14 @@ services:
         source: "./docker/log/mysql/mysql-error.log"
         target: "/var/log/mysql/mysql-error.log"
     environment:
-      - MYSQL_DATABASE=vtn-game-sample
       - MYSQL_USER=${DB_USERNAME}
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      - TZ=Asia/Tokyo
     ports:
       - 3306:3306
     restart: always
+    networks:
+      - backend
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -28,12 +28,16 @@ services:
       - "3000:80"
     volumes:
       - ./phpmyadmin/sessions:/sessions
+    networks:
+      - backend
 
   redis:
     image: redis:latest
     restart: always
     ports:
       - "6379:6379"
+    networks:
+      - backend
 
   server:
     depends_on:
@@ -49,4 +53,10 @@ services:
     ports: 
       - 80:80
     volumes:
-      - ./server/:/app
+      - ./server:/usr/games
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

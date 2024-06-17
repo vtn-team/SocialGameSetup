@@ -1,16 +1,13 @@
-FROM node:18.14
+FROM node:18.14-bullseye-slim
 
 ARG GITHUB_NAME
 ARG DB_USERNAME
 ARG DB_PASSWORD
 
-RUN apt install git -y
-RUN git clone https://github.com/${GITHUB_NAME}/SocialGameNodeJSServer /app/ 
-VOLUME /app
-WORKDIR /app
+RUN apt-get update
+RUN apt-get install -y git
+RUN git clone https://github.com/${GITHUB_NAME}/SocialGameNodeJSServer /usr/games/
+WORKDIR /usr/games
 RUN npm install
+RUN npm install -g forever
 
-RUN npx tsc
-RUN set DB_USER=${DB_USERNAME}
-RUN set DB_PWD=${DB_PASSWORD}
-RUN node js/main.js
