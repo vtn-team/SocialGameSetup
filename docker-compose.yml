@@ -25,7 +25,7 @@ services:
     environment:
       - PMA_ARBITRARY=1
     ports:
-      - "3000:80"
+      - "8080:80"
     volumes:
       - ./phpmyadmin/sessions:/sessions
     networks:
@@ -39,12 +39,12 @@ services:
     networks:
       - backend
 
-  server:
+  api-server:
     depends_on:
       - mariadb
       - redis
     build:
-      context: ./docker/server
+      context: ./docker/api_server
       args:
         - DB_USERNAME=${DB_USERNAME}
         - DB_PASSWORD=${DB_PASSWORD}
@@ -53,7 +53,19 @@ services:
     ports: 
       - 80:80
     volumes:
-      - ./server:/usr/games
+      - ./APIServer:/usr/games
+    networks:
+      - backend
+
+  game-server:
+    build:
+      context: ./docker/game_server
+      args:
+        - GITHUB_NAME=${GITHUB_NAME}
+    ports: 
+      - 3000:3000
+    volumes:
+      - ./GameServer:/usr/games
     networks:
       - backend
 
